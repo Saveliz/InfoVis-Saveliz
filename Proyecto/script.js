@@ -1,5 +1,6 @@
 const HEIGHT = 600;
 const WIDTH = 1000;
+const circle_radius = 130;
 
 const margin = {top: 20, bottom: 20, left: 20, right: 20};
 
@@ -38,9 +39,25 @@ const svg = d3.select('body')
     .attr('width', WIDTH)
     .attr('height', HEIGHT);
 
-const circleGraph = svg.append('g')
-    .attr('id','circle-container')
+const circleGraphM = svg.append('g')
+    .attr('id','circle-container-m')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+const textCircleM =circleGraphM.append('text')
+    .attr('id','circle-text-container-m')
+    .attr('transform', `translate(${circle_radius+margin.left}, ${circle_radius + margin.top})`)
+    .attr("font-size", "20px")
+    .style("text-anchor", "middle");
+
+const circleGraphF = svg.append('g')
+    .attr('id','circle-container-f')
+    .attr('transform', `translate(${2*(margin.left + circle_radius + margin.right)}, ${margin.top})`);
+
+const textCircleF =circleGraphF.append('text')
+    .attr('id','circle-text-container-m')
+    .attr('transform', `translate(${circle_radius+margin.left}, ${circle_radius + margin.top})`)
+    .attr("font-size", "20px")
+    .style("text-anchor", "middle");
 
 // Se agrupan los actores por elemento
 async function loadFiles(){
@@ -50,6 +67,18 @@ async function loadFiles(){
     const actresses = actresses_info.Objects
     return {actors, actresses}
 };
+
+const mouseLeave = (m,d) => {
+    textCircleF
+        .text("");
+        d3.select(m.currentTarget)
+        .attr("fill",`${Colors[d.data.key]}`)
+    textCircleM
+        .text("");
+        d3.select(m.currentTarget)
+        .attr("fill",`${Colors[d.data.key]}`)
+        
+}
 
 const actors = loadFiles().then(({actors, actresses}) => {
     const mapActorElement = d3.group(actors , d => d.Element);
@@ -62,6 +91,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
     let element_data_f = [];
     let sign_data_g = [];
     let element_data_g = [];
+
 
     for (let i = 0; i < Elements.length; i++) {
         let this_m = {"key":Elements[i],
@@ -102,24 +132,71 @@ const actors = loadFiles().then(({actors, actresses}) => {
     let m_e_data_ready = pie(element_data_m);
     let f_e_data_ready = pie(element_data_f);
     let g_e_data_ready = pie(element_data_g);
-      
+    
 
-    const radius = 130;
-
-    svg
+    function createCircleGraphs(data_chosen){
+        let d_m, d_f;
+        if(data_chosen === "s"){
+            d_m = m_s_data_ready;
+            d_f = f_s_data_ready;
+        }
+        else{
+            d_m= m_e_data_ready;
+            d_f = f_e_data_ready;
+        };
+        circleGraphM
         .selectAll('circleGraph')
-        .data(m_s_data_ready)
+        .data(d_m)
         .enter()
         .append('path')
         .attr('d', d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius)
+            .innerRadius(circle_radius-40)
+            .outerRadius(circle_radius)
         )
-        .attr("transform",`translate(150,150)`)
-        .attr('fill', function(d){ console.log(d); return(Colors[`${d.data.key}`]) })
+        .attr("transform",`translate(${circle_radius + 20},${circle_radius + 20})`)
+        .attr('fill', function(d){return(Colors[`${d.data.key}`]) })
         .attr("stroke", "black")
         .style("stroke-width", "0px")
         .style("opacity", 0.7)
-});
+        .on("mouseenter", (m, d) => {
+            textCircleF
+                .text(`${d.data.key}`);
+            textCircleM
+                .text(`${d.data.key}`);
+                t = d3.select(m.currentTarget);
+                t.attr("fill","#ffff")
+            
+          })
+        .on("mouseleave", mouseLeave);
 
+        circleGraphF
+        .selectAll('circleGraph')
+        .data(d_f)
+        .enter()
+        .append('path')
+        .attr('d', d3.arc()
+            .innerRadius(circle_radius - 40)
+            .outerRadius(circle_radius)
+        )
+        .attr("id",function(d){`CGS-${d.data.key}`})
+        .attr("transform",`translate(${circle_radius + 20},${circle_radius + 20})`)
+        .attr('fill', function(d){return(Colors[`${d.data.key}`]) })
+        .attr("stroke", "black")
+        .style("stroke-width", "0px")
+        .style("opacity", 0.7)
+        .on("mouseenter", (m, d) => {
+            textCircleF
+                .text(`${d.data.key}`)
+            sec = textCircleF.selectAll(`${d.data.key}`)
+            sec.attr("fill","#ffff")
+            textCircleM
+                .text(`${d.data.key}`);
+            t = d3.select(m.currentTarget);
+            t.attr("fill","#ffff")
+          })
+          .on("mouseleave", mouseLeave);
+    };
+
+    createCircleGraphs("s");
+});
 
