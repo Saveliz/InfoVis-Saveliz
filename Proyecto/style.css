@@ -17,3 +17,15 @@ body{
 .subtitle{
     font-size: 1.8rem;
 }
+
+#circle-image-container{
+    text-align: center;
+    margin: 0 auto;
+    width: 50px;
+    height: 50px;
+    stroke-width: 1px;
+}
+
+.tool-container{
+    margin: 3rem;
+}
