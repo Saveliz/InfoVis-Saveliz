@@ -1,7 +1,7 @@
 const HEIGHT = 600;
 const WIDTH = 1000;
 const circle_radius = 130;
-const info_square_width = 120;
+const info_square_width = 80;
 const total_years = 50;
 
 const margin = {top: 20, bottom: 20, left: 20, right: 20, infoBoxTop:70};
@@ -54,22 +54,22 @@ const Colors =
 };
 
 const scale_map = {
-    "Earth":`translate(100, 90) scale(0.75) `,
-    "Water":`translate(124, 100) scale(4)`,
-    "Air":`translate(100, 85) scale(1)`,
-    "Fire":`translate(113, 95) scale(2.3)`,
-    "Taurus":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Virgo":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Capricorn":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Aries":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Leo":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Sagittarius":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Cancer":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Scorpio":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Piscies":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Gemini":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Libra":`scale(0.075) rotate(180) translate(-2525, -2100)`,
-    "Aquarius":`scale(0.075) rotate(180) translate(-2525, -2100)`
+    "Earth":`translate(65, -40) scale(1) `,
+    "Water":`translate(85, -40) scale(6)`,
+    "Air":`translate(60, -50) scale(1.25)`,
+    "Fire":`translate(75, -40) scale(3.1)`,
+    "Taurus":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Virgo":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Capricorn":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Aries":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Leo":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Sagittarius":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Cancer":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Scorpio":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Piscies":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Gemini":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Libra":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`,
+    "Aquarius":`translate(85, 60) rotate(180) scale(0.09) scale(-1,1)`
 }
 
 const selectorContainer = d3.select("#selectors");
@@ -93,31 +93,24 @@ const svg = d3.select('body')
 const infoBox = svg
     .append('g')
     .attr('id', 'info-box-container')
-    .attr('transform',`translate(${margin.left + 2*circle_radius + info_square_width/2 + margin.left},${margin.top + textSpacing + margin.infoBoxTop})`)
+    .attr('transform',`translate(${2*circle_radius + info_square_width/2 - 15},${margin.top + textSpacing + margin.infoBoxTop})`)
 
 const infoPercentM = infoBox 
     .append('text')
     .attr('id', 'info-percentage-m')
-    .attr('transform', `translate(0,0)`)
-    .attr("font-size", "1.2rem")
-    .style("text-anchor", "right")
-    .text("'Mejor Actor': ");
+    .attr('transform', `translate(-110,55)`)
+    .attr("font-size", "2rem")
+    .style("text-anchor", "middle")
+    .text("");
 
 const infoPercentF = infoBox 
     .append('text')
     .attr('id', 'info-percentage-f')
-    .attr('transform', `translate(0,${textSpacing})`)
-    .attr("font-size", "1.2rem")
-    .style("text-anchor", "right")
-    .text("'Mejor Actriz': ");
+    .attr('transform', `translate(370,55)`)
+    .attr("font-size", "2rem")
+    .style("text-anchor", "middle")
+    .text("");
 
-const infoPercentG = infoBox 
-    .append('text')
-    .attr('id', 'info-percentage-f')
-    .attr('transform', `translate(0,${textSpacing*2})`)
-    .attr("font-size", "1.2rem")
-    .style("text-anchor", "right")
-    .text("'General': ");
 
 // Se agrupan los actores por elemento
 async function loadFiles(){
@@ -127,18 +120,6 @@ async function loadFiles(){
     const actresses = actresses_info.Objects
     return {actors, actresses}
 };
-
-const mouseLeave = (m,d) => {
-    textCircleF
-        .text("");
-    sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
-    sec.attr("fill",`${Colors[d.data.key]}`)
-    textCircleM
-        .text("");
-    sec = circleGraphM.selectAll(`.CGS-${d.data.key}`)
-    sec.attr("fill",`${Colors[d.data.key]}`)
-        
-}
 
 
 const actors = loadFiles().then(({actors, actresses}) => {
@@ -220,15 +201,14 @@ const actors = loadFiles().then(({actors, actresses}) => {
             .text("Mejor Actor")
             .style("text-anchor", "middle");
 
-        const textCircleM =circleGraphM.append('text')
+        const textCircleM =infoBox.append('text')
             .attr('id','circle-text-container-m')
-            .attr('transform', `translate(${circle_radius+margin.left}, ${circle_radius + margin.top + 40})`)
-            .attr("font-size", "20px")
+            .attr('transform', `translate(130,110)`)
+            .attr("font-size", "30px")
             .style("text-anchor", "middle");
 
-        const imageCircleM=circleGraphM.append('path')
-            .attr('id','circle-image-container')
-            .attr('transform',`scale(0.075) rotate(180) translate(-2525, -2100)`);
+        const imageCircleM=infoBox.append('path')
+            .attr('id','circle-image-container');
 
         const circleGraphF = svg.append('g')
             .attr('id','circle-container-f')
@@ -240,15 +220,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
             .attr("font-size", "1.5rem")
             .text("Mejor Actriz")
             .style("text-anchor", "middle");
-
-        const textCircleF =circleGraphF.append('text')
-            .attr('id','circle-text-container-m')
-            .attr('transform', `translate(${circle_radius+margin.left}, ${circle_radius + margin.top + 40})`)
-            .attr("font-size", "20px")
-            .style("text-anchor", "middle");
-
-        const imageCircleF = circleGraphF.append('path')
-            .attr('id','circle-image-container');
 
         let d_m, d_f;
         if(data_chosen === "Signo"){
@@ -275,8 +246,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
         .style("stroke-width", "0px")
         .style("opacity", 0.8)
         .on("mouseenter", (m, d) => {
-            textCircleF
-                .text(`${d.data.key}`)
             sec = circleGraphM.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",1)
@@ -288,26 +257,21 @@ const actors = loadFiles().then(({actors, actresses}) => {
                 .style("opacity",1)
                 .style("stroke-width",10);
 
-            imageCircleF
-                .attr("d",`${Images[d.data.key]}`)
-                .attr("transform",`${scale_map[d.data.key]}`)
 
             imageCircleM
                 .attr("d",`${Images[d.data.key]}`)
                 .attr("transform",`${scale_map[d.data.key]}`)
 
             infoPercentM
-                .text(`'Mejor Actor': ${(repetition[d.data.key]["M"]/total_years*100).toFixed(1)}%`);
+                .text(`${(repetition[d.data.key]["M"]/total_years*100).toFixed(1)}%`);
 
             infoPercentF
-                .text(`'Mejor Actriz': ${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
+                .text(`${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
             
             infoPercentG
                 .text(`'General': ${(repetition[d.data.key]["G"]/(2*total_years)*100).toFixed(1)}%`);
           })
           .on("mouseleave", (m,d) =>{
-            textCircleF
-                .text("");
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",0.8)
@@ -318,20 +282,16 @@ const actors = loadFiles().then(({actors, actresses}) => {
             sec
                 .style("opacity",0.8)
                 .style("stroke-width",0);
-            imageCircleF
-                .attr("d",``)
 
             imageCircleM
                 .attr("d",``)
             
             infoPercentM
-                .text(`'Mejor Actor': `);
+                .text(``);
 
             infoPercentF
-                .text(`'Mejor Actriz': `);
+                .text(``);
             
-            infoPercentG
-                .text(`'General': `);
         });
 
         circleGraphF
@@ -350,8 +310,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
         .style("stroke-width", "0px")
         .style("opacity", 0.8)
         .on("mouseenter", (m, d) => {
-            textCircleF
-                .text(`${d.data.key}`)
             sec = circleGraphM.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",1)
@@ -363,26 +321,21 @@ const actors = loadFiles().then(({actors, actresses}) => {
                 .style("opacity",1)
                 .style("stroke-width",10);
 
-            imageCircleF
-                .attr("d",`${Images[d.data.key]}`)
-                .attr("transform",`${scale_map[d.data.key]}`)
 
             imageCircleM
                 .attr("d",`${Images[d.data.key]}`)
                 .attr("transform",`${scale_map[d.data.key]}`)
 
             infoPercentM
-                .text(`'Mejor Actor': ${(repetition[d.data.key]["M"]/total_years*100).toFixed(1)}%`);
+                .text(`${(repetition[d.data.key]["M"]/total_years*100).toFixed(1)}%`);
 
             infoPercentF
-                .text(`'Mejor Actriz': ${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
+                .text(`${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
             
             infoPercentG
                 .text(`'General': ${(repetition[d.data.key]["G"]/(2*total_years)*100).toFixed(1)}%`);
           })
           .on("mouseleave", (m,d) =>{
-            textCircleF
-                .text("");
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",0.8)
@@ -393,17 +346,15 @@ const actors = loadFiles().then(({actors, actresses}) => {
             sec
                 .style("opacity",0.8)
                 .style("stroke-width",0);
-            imageCircleF
-                .attr("d",``)
 
             imageCircleM
                 .attr("d",``)
 
             infoPercentM
-                .text(`'Mejor Actor': `);
+                .text(``);
 
             infoPercentF
-                .text(`'Mejor Actriz': `);
+                .text(``);
             
             infoPercentG
                 .text(`'General': `);
@@ -420,6 +371,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
         applyButton.on("click", () => paramsSelect());
     };
 
-    createCircleGraphs("s");
+    createCircleGraphs("Signo");
 });
 
