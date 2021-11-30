@@ -50,7 +50,8 @@ const Colors =
     "Piscies":"#1e88e5",
     "Gemini":"#9163cb",
     "Libra":"#c19ee0",
-    "Aquarius":"#dec9e9"
+    "Aquarius":"#dec9e9",
+    "Text":"#ffff"
 };
 
 const scale_map = {
@@ -84,11 +85,13 @@ selector.append("option").text("Signo");
 
 // Inicializamos el svg
 
-const svg = d3.select('body')
+const svg = d3.select('.tool-container')
     .append('svg')
     .attr('id', 'circle-graph-container')
     .attr('width', WIDTH)
-    .attr('height', HEIGHT);
+    .attr('height', HEIGHT)
+    .style('display','block')
+    .style('margin','auto');
 
 const infoBox = svg
     .append('g')
@@ -101,6 +104,7 @@ const infoPercentM = infoBox
     .attr('transform', `translate(-110,55)`)
     .attr("font-size", "2rem")
     .style("text-anchor", "middle")
+    .style("fill",`${Colors["Text"]}`)
     .text("");
 
 const infoPercentF = infoBox 
@@ -109,6 +113,7 @@ const infoPercentF = infoBox
     .attr('transform', `translate(370,55)`)
     .attr("font-size", "2rem")
     .style("text-anchor", "middle")
+    .style("fill",`${Colors["Text"]}`)
     .text("");
 
 
@@ -199,15 +204,18 @@ const actors = loadFiles().then(({actors, actresses}) => {
             .attr('transform', `translate(${circle_radius+margin.left}, 0)`)
             .attr("font-size", "1.5rem")
             .text("Mejor Actor")
+            .style("fill",`${Colors["Text"]}`)
             .style("text-anchor", "middle");
 
         const textCircleM =infoBox.append('text')
             .attr('id','circle-text-container-m')
             .attr('transform', `translate(130,110)`)
             .attr("font-size", "30px")
+            .style("fill",`${Colors["Text"]}`)
             .style("text-anchor", "middle");
 
         const imageCircleM=infoBox.append('path')
+            .style("fill",`${Colors["Text"]}`)
             .attr('id','circle-image-container');
 
         const circleGraphF = svg.append('g')
@@ -219,7 +227,8 @@ const actors = loadFiles().then(({actors, actresses}) => {
             .attr('transform', `translate(${circle_radius+margin.left}, 0)`)
             .attr("font-size", "1.5rem")
             .text("Mejor Actriz")
-            .style("text-anchor", "middle");
+            .style("text-anchor", "middle")
+            .style("fill",`${Colors["Text"]}`);
 
         let d_m, d_f;
         if(data_chosen === "Signo"){
@@ -268,8 +277,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
             infoPercentF
                 .text(`${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
             
-            infoPercentG
-                .text(`'General': ${(repetition[d.data.key]["G"]/(2*total_years)*100).toFixed(1)}%`);
           })
           .on("mouseleave", (m,d) =>{
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
@@ -331,9 +338,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
 
             infoPercentF
                 .text(`${(repetition[d.data.key]["F"]/total_years*100).toFixed(1)}%`);
-            
-            infoPercentG
-                .text(`'General': ${(repetition[d.data.key]["G"]/(2*total_years)*100).toFixed(1)}%`);
           })
           .on("mouseleave", (m,d) =>{
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
@@ -355,9 +359,6 @@ const actors = loadFiles().then(({actors, actresses}) => {
 
             infoPercentF
                 .text(``);
-            
-            infoPercentG
-                .text(`'General': `);
         });
 
         const paramsSelect = () => {
