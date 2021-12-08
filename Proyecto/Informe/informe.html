@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+    
+  <head>
+    <meta charset="utf-8">
+    <title>Informe Examen Saveliz</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+  <div class="title">
+    Informe de herramienta de Visualización de la Información
+  </div>
+  <div class="subtitle">Contexto de datos y dominio</div>
+  <p> Los datos a trabajar fueron obtenidos de la información pública de los ganadores del premio de los Academy Awards a mejor actor y actriz, y la información personal sobre cada uno de los ganadores. 
+    La información relevante para la herramienta se recopiló manualmente y se agrupó en dos archivos de formato JSON
+  <ul>
+    <li><span class="code">actores.json</span></li>
+    <li><span class="code">actrices.json</span></li>
+  </ul>
+  El formato de ambos archivos es el siguiente:
+  <ul>
+    <li><span class="code">Collection_name</span>: consiste en un string con el nombre de la colección realizada</li>
+    <li><span class="code">Span</span>: Consiste en un string con el año de inicio y el año de término (incluidos) de los datos recopilados</li>
+    <li><span class="code">Objects</span>: Consiste en una lista de objetos en formato JSON. Todos estos objetos tienen los siguientes elementos:
+      <ul>
+        <li><span class="code">Name</span>: Consiste en un string con el nombre del actor o la actriz a quien se está haciendo referencia</li>
+        <li><span class="code">Year</span>: Consiste en un int indicando el año en que este actor o actriz ganó el premio a mejor actor o actriz</li>
+        <li><span class="code">Movie</span>: Consiste en un string indicando el nombre de la película por la cual el actor o la actriz consiguió la nominación al premio</li>
+        <li><span class="code">Sign</span>: Consiste un un string indicando el signo del actor o la actriz, el cual fue calculado manualmente accediendo a la información del actor o la actriz, y con la ayuda del archivo que se puede encontrar en la carpeta "Herramienta" con el nombre "fecha-signo-elemento.txt"</li>
+        <li><span class="code">Element</span>: Consiste un un string indicando el elemento del signo del actor o la actriz, el cual fue calculado manualmente accediendo a la información del actor o la actriz, y con la ayuda del archivo que se puede encontrar en la carpeta "Herramienta" con el nombre "fecha-signo-elemento.txt"</li>
+      </ul>
+    </li>
+  </ul>
+  La información sobre los premios fue obtenida de <a href= https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actor> la lista referente a mejor actor de wikipedia</a>, <a href= https://en.wikipedia.org/wiki/Academy_Award_for_Best_Actress> la lista referente a mejor actriz de wikipedia</a>, y la información personal fue obtenida del link a la página de cada actor y actriz presente entre sus ganadores.
+  </p>
+  <p>
+    Estos datos son procesados en el script, donde se dejan los datos originales para la linea de tiempo, y se agrupan los actores y actrices según su signo y su elemento. Estos grupos tienen los siguientes atributos:
+    <ul>
+      <li><span class="code">"key"</span>: string que da el nombre del grupo (ej. Tauro, Aries, Tierra, etc)</li>
+      <li><span class="code">"value"</span>: int que indica la cantidad de actores o actrices pertenecientes a dicho grupo.</li>
+    </ul>
+  </p>
+  <p>
+    Además de esto, se utilizan datos de paths de signos y elementos para crear las imágenes de apoyo a la visualización, sin mencionar también la asignación a cada elemento o signo de un color específico para mantener la consistencia.
+  </p>
+  <div class="subtitle">Usuario Objetivo y Uso de la Herramienta</div>
+  <p>
+    El usuario objetivo para esta herramienta, es aquel curioso por la correlación de los signos de los ganadores de los Academy Awards y su signo zodiacal o elemento de este. Este público objetivo puede ser un grupo cinéfilo, creyente en la astrología, o alguien con conocimiento actoral investigando teorías.
+  </p>
+  <p>
+    A partir de esta herramienta se espera que el usuario pueda establecer una correlación entre signos zodiacales o elementos de estos y una mayor probabilidad de ganar el premio de mejor actor o mejor actriz de los Academy awards. La idea es poder ver la teoría de los elementos en la actuación propuesta por Judith Rudakoff asociada al elemento natural de cada actor y la representación de este a través de su signo. 
+  </p>
+  <p>
+    También se puede observar una linea de tiempo en la parte inferior de la herramienta, la cual detalla la cronología de cada ganador de estos premios, y puede ser usada para explorar los nombres y películas de las y los ganadores.    
+  </p>
+  <div class="subtitle">Abstracción de Tareas</div>
+  <div class="subtitle-2">Primera Tarea</div>
+  <p>
+    <div><span class="highlight">Descubrir una relación.</span></div>
+    Descubrir la relación entre actores y actrices ganadoras del Oscar con su signo o el elemento de este.
+
+  </p>
+  <div class="subtitle-2">Segunda Tarea</div>
+  <p>
+    <div><span class="highlight">Presentar una cronología.</span></div>
+    Presentar el orden cronológico de las y los ganadores del Oscar, y las características relacionadas a sus victorias.
+  </p>
+  <div class="subtitle-2">Tercera Tarea</div>
+  <p>
+    <div><span class="highlight">Disfrutar interactuando.</span></div>
+    Disfrutar explorando los distintos grupos y viendo su relación con el total. Al tener visualizaciones activadas por hover o selectores, el usuario se puede sentir más incluido en esta visualización.
+  </p>
+  <div class="subtitle">Abstracción de Datos</div>
+  <div class="subtitle-2">Conjunto de datos</div>
+  <p>
+    Los datos recopilados de los actores y las películas, si bien son trabajados en formato JSON, son de tipo tabular ya que todos contan con un valor para atributos predeterminados.
+  </p>
+  <p>
+    Los datos de paths para apoyar la visualización pueden ser vistos como SVGs por sí solos, por lo que se pueden considerar un conjunto geométrico.
+  </p>
+  <div class="subtitle-2">Datos Singulares</div>
+  En nivel de datos singulares se tienen los siguientes tipos:
+  <ul>
+    <li><span class="bold">Ganador (Item):</span> Consiste en un dato con la información sobre la persona ganadora del premio, e información sobre el contexto en el que se ganó</li>  
+    <li><span class="bold">Imagen (Forma):</span> Consiste en un dato que representa el camino a seguir al dibujar un elemento en SVG con la herramienta path</li>  
+  </ul>
+  <div class="subtitle-2">Atributos</div>
+  Los datos utilizados, si bien sencillos, presentan varios atributos:
+  <ol>
+    <li>
+      <span class="bold">Name:</span> es el nombre del actor o actriz que ganó el premio. 
+      <ul>
+        <li>Categórico. Los nombres no poseen un orden intrínseco.</li>
+        <li>Valor. Sus valores no identifican el elemento en los datos</li>
+      </ul>
+    </li>
+    <li>
+      <span class="bold">Year:</span> es el año en el que se ganó el premio. 
+      <ul>
+        <li>Ordenado. Los años tienen un orden intrínseco ya que son numéricos, y este número crece con el tiempo.</li>
+        <li>Secuencial. Este número sólo puede ser positivo dentro del rango escogido.</li>
+        <li>No cíclico. Los años impuestos no se van a volver a repetir. Se tiene un claro inicio y un claro final. </li>
+        <li>Llave. Su valor es utilizado para identificar al elemento en la linea de tiempo en ambos datasets que contienen items del tipo Ganador.</li>
+      </ul>
+    </li> 
+    <li>
+      <span class="bold">Movie:</span> es el nombre de la película por la que el actor o actriz fue nominado/a al premio. 
+      <ul>
+        <li>Categórico. Los nombres de las películas no poseen un orden intrínseco.</li>
+        <li>Valor. Sus valores no identifican el elemento en los datos</li>
+      </ul>
+    </li>
+    <li>
+      <span class="bold">Sign:</span> es el signo zodiacal de la persona ganadora del premio. 
+      <ul>
+        <li>Categórico. Los signos zodiacales no poseen un orden intrínseco en el formato que se está tratando la información.</li>
+        <li>Valor. Sus valores no identifican el elemento en los datos</li>
+      </ul>
+    </li>
+    <li>
+      <span class="bold">Element:</span> es el elemento asociado signo zodiacal de la persona ganadora del premio. 
+      <ul>
+        <li>Categórico. Los elementos naturales no poseen un orden intrínseco.</li>
+        <li>Valor. Sus valores no identifican el elemento en los datos</li>
+      </ul>
+    </li>
+
+  </ol>
+  <div class="subtitle-2">Datos derivados</div>
+  En la visualización se agrupan datos según ciertos valores categóricos para obtener un dato derivado:
+  <ol>
+    <li>
+      <span class="bold">Porcentaje del total:</span> representa el porcentaje asociado a un signo o elemento en relación a la cantidad total de items. 
+      <ul>
+        <li>Ordenado. Los porcentajes tienen un orden intrínseco ya que son numéricos y comparables.</li>
+        <li>No cíclico. Los porcentajes tienen un claro máximo (100%) y mínimo (0%), y estos no se encuentran en un ciclo. </li>
+        <li>Llave. Su valor no es utilizado para clasificar los items.</li>
+      </ul>
+    </li>
+
+  </ol>
+  <div class="subtitle">Codificación visual de tareas e interacción </div>
+  Para abordar las tareas especificadas, se utilizaron las siguientes marcas, canales, idioms visuales, idioms de interacción y decisiones de diseño:
+  <ul>
+    
+    <li>
+      <div class="subtitle-2">Párrafo explicativo de estudio actoral.(Decisión de diseño)</div>
+      Este párrafo crea un contexto para la herramienta, y le da una idea al usuario de la herramienta sobre qué conclusiones puede sacar de esta. Esto potencia tanto la <span class="bold">primera tarea</span> como la <span class="bold">tercera</span>, ya que se le da la idea de la primera, y tener un objetivo claro de comparación puede entretener.
+    </li>
+    <li>
+      <div class="subtitle-2">Dropdown de selección de "Elemento" o "Signo" y botón "Aplicar" (Decisión de diseño)</div>
+      Esta decisión ayuda a agrupar de manera "macro" con los elementos, basado en el ensayo de Rudakoff; o de manera "micro" con los signos, para que el usuario busque características específicas de los elementos en los signos. Esta decisión ayuda tanto a la <span class="bold">tercera tarea</span>, por el hecho de interactuar con la herramienta y entretenerse; como para la <span class="bold">primera</span>. Ya que estas distintas agrupaciones ayudan a descubrir lo planteado previamente por el párrafo.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Relación de colores Signo-Elemento(Decisión de diseño)</div>
+      Los colores de los elementos son utilizados como categóricos, lo que se puede observar por la completa diferencia entre los valores de estos. Sin embargo, los colores asignados a los signos son obtenidos como tonos variados de su elemento asociado. Esto, con el fin de mantener siempre la separación propuesta por Rudakoff en su ensayo. Así, cuando se están explorando los detalles, se mantiene siempre la idea de fondo de la gran escala. Esta conexión crea una relación en la mente del usuario, por lo que sirve para la<span class="bold"> primera, segunda y tercera tarea</span>.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Partición en dos secciones de la herramienta (Decisión de diseño)</div>
+      Para poder representar las diferentes tareas es necesario dividir la herramienta en dos subsecciones:
+      <ul>
+        <li> Dos donut charts representando las agrupaciones de los ganadores por el parámetro seleccionado </li>
+        <li> Una linea de tiempo representada por gráficos de barra con los actores y actrices ganadoras ordenadas cronológicamente.</li>
+      </ul>
+      De esta forma, el usuario podrá obtener la información deseada tanto del dataset original, con los detalles de cada item, como de las agrupaciones creadas.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Donut charts (Idiom visual)</div>
+      <p>
+        Estos donut charts son creados de la misma manera entre sí, pero con datos distintos. El donut chart de la derecha es la información de "Mejor actor" y el de la izquierda, "Mejor actriz". Se separan para agregar otro nivel de descubrimiento a la <span class="bold">primera tarea</span>, ya que el usuario no sólo puede analizar por signos, si no que también por sexo.
+      </p>
+        Se elige el donut chart ya que se quiere representar la relación de secciones vs. el total de los datos, pero se quiere mantener una percepción clara y no engañosa, a diferencia de lo que se obtendría con un pie chart. Además, el centro vacío deja espacio para marcas explicativas sobre la información.
+      <p>
+
+      </p>
+    </li>
+
+    <li>
+      <div class="subtitle-2">Título de los donut charts (Marca)</div>
+      Este título es para aclarar al usuario qué donut chart representa a qué grupo. Es una marca útil para mantener al usuario informado, para así facilitar su exploración y descubrimiento por la herramienta.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Tamaño de la sección del donut chart (Marca)</div>
+      Sirve para comparar en primera instancia la cantidad de actores y actrices pertenecientes a cada uno de los grupos. Esto facilita la primera <span class="bold">tarea</span>. 
+    </li>
+
+    <li>
+      <div class="subtitle-2">Color de la sección del donut chart (Canal)</div>
+      Mediante este color se genera la relación instantanea entre la sección y el signo o elemento al que esta corresponde (su "key" en los datos). De esta forma el usuario puede ver elementos relacionados entre sí en la visualización antes de realizar cualquier procesamiento consciente de ella. 
+      
+    </li>
+
+    <li>
+      <div class="subtitle-2">Posición de la sección del donut chart (Canal)</div>
+      <p>
+        En el caso de los signos, la posición de la sección es dada no por su orden cronológico dentro del año, si no que se da por la agrupación de cada signo a su elemento correspondiente. De esta manera, al cambiar de visualización entre signo y elemento se mantiene la consistencia con la relación elemento-signo previamente mencionada. Esto sirve para la primera y <span class="bold">tercera tarea</span>, ya que facilita el descubrimiento y la capacidad de disfrutar del usuario.
+      </p>
+      <p>
+        En el caso de los elementos, estos se encuentran posicionados opuestos a su opuesto natural dentro de la dona (Aire-Tierra & Agua-Fuego).
+      </p>
+      </li>
+
+    <li>
+      <div class="subtitle-2">Imagen representativa (compartida) de la sección (Marca)</div>
+      La marca de la imagen se encuentra entre los dos donut charts pertenecientes a los dos grupos separados de datos. Esta actua como una conección inicial entre ambos, para indicar que se está analizando la información sobre esa sección no sólo en el donut chart seleccionado. Sino que en la totalidad de la primera sección de la herramienta. Esto sirve para facilitar la <span class="bold">primera tarea</span>, ya que aclara la situación al ususario para que este pueda explorar y descubrir de manera intuitiva. 
+    </li>
+
+    <li>
+      <div class="subtitle-2">Texto representativo (compartido) de la sección (Marca)</div>
+      Ya se identificó al usuario como un usuario común. Es decir, alguien que no sabe necesariamente la relación entre los signos zodiacales y su imagen representativa. Es por esto que esta marca se ubica debajo de la imagen representativa, para así dar una aclaración explícita del signo o elemento a los usuarios no entendidos. Esto ayuda a la <span class="bold">primera, segunda y tercera tarea</span>. Ya que la intuitividad resulta en una navegación más sencilla, consiguiendo realizar la tarea que el usuario se proponga (puede ser 1 2 o 3) sin trabas.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Porcentaje representativo de la sección (Marca)</div>
+      La marca sirve para que el usuario procese de manera activa la información que previamente se había deducido a partir del tamaño de las secciones. Se puede hacer una comparación más precisa, ahora cuantificando activamente las diferencias o similitudes entre las distintas secciones, sea del total del grupo de datos, o haciendo la conexión entre los sexos.
+
+    </li>
+
+    <li>
+      <div class="subtitle-2">Aumento de volumen y opacidad de las secciones asociadas del donut chart al navegar encima de una (Idiom de interacción)</div>
+      Este idiom cumple tanto la función de conectar definitivamente ambas secciones relacionadas entre los donut charts para solidificar el descubrimiento de la <span class="bold">primera tarea</span>, como la de que el usuario disfrute recorriendo con el mouse las diferentes partes de la herramienta (<span class="bold">tercera tarea</span>).
+    </li>
+
+    <li>
+      <div class="subtitle-2">Gráficos de barras representando una linea de tiempo (Idiom visual)</div>
+      Estas barras tienen como finalidad principal que el usuario pueda realizar la <span class="bold">segunda tarea</span>, ya que en este gráfico se representa la cronología de los items de cada uno de los datasets. Pero también cumple un rol importante para la <span class="bold">primera tarea</span>, ya que le da al usuario otro parámetro mediante el cual analizar los datos presentes: el tiempo. Esta sección de la herramienta también se puede ver como una forma de conseguir la <span class="bold">tercera tarea</span>, ya que las distintas interacciones que pueden ocurrir entre el usuario y esta puede resultar en una experiencia mucho más disfrutable para este.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Título de cada gráfico de barra (Marca)</div>
+      Este título es para aclarar al usuario qué gráfico de barra representa a qué grupo. Es una marca útil para mantener al usuario informado, para así facilitar su exploración y descubrimiento por la herramienta (<span class="bold">primera y segunda tarea</span>).
+    </li>
+
+    <li>
+      <div class="subtitle-2">Color del item en gráfico de barras (Canal)</div>
+      Este color conecta la primera y segunda sección de la herramienta, ya que el "key" seleccionado con el dropdown es representado con el mismo color en ambas partes. Así se crea una herramienta lógica y con cohesión. De esta forma, el usuario puede entender que cada tarea puede recibir aportes de las distintas secciones de la herramienta. Sin embargo, estos colores facilitan enormemente la <span class="bold">segunda tarea y la primera</span>. 
+    </li>
+
+    <li>
+      <div class="subtitle-2">Posición del item en gráfico de barras (Canal)</div>
+      <p>
+          Eje X: Este canal representa el orden cronológico entre los items representados en esta sección de la herramienta. La relación no sólo se hace con los otros items del mismo dataset. Si no que también entre items de los dos datasets importados. Ya que los ganadores que sucedieron el mismo año se encuentran uno arriba del otro. De esta forma, apoyando a la <span class="bold">segunda tarea</span>.
+      </p>
+      <p>
+        Eje Y: Este canal sirve como separación entre los datasets. Al mantener el eje y constante en cada uno de los datasets, se puede ver la relación entre ellos. Apoyando así a la primera, <span class="bold">segunda y tercera tarea</span>.
+      </p>
+    </li>
+
+    <li>
+      <div class="subtitle-2">Cuadro de texto con información sobre el item (Marca)</div>
+      Es necesario detallar la información relacionada a cada item. Esto se hace con un cuadro de texto con los parámetros ordenados, para que así el usuario pueda obtener toda la información disponible acerca de cada uno de estos items. Esto ayuda a la <span class="bold">primera y segunda tarea</span>, ya que sirve para descubrir más en profundidad cada victoria, y se presenta la información de una manera especial para el usuario.
+    </li>
+
+    <li>
+      <div class="subtitle-2">Aumento de opacidad del item al navegar encima, y aparición de cuadro de texto (Decisión de interacción)</div>
+      Esta decisión es tomada totalmente para ayudar con la <span class="bold">tercera tarea</span>. El aumento de opacidad de cada cuadro crea una relación entre la sección de las donas y la del gráfico de barras, invitando al usuario a recorrer la herramienta en su totalidad. Además de esto, la aparición del cuadro de texto en una ubicación específica sirve para relacionar esta información con la barra seleccionada. Si el usuario puede recorrer la información, y esta se relaciona bien entre sí, se genera una capacidad mayor de disfrutar en él.
+    </li>
+    
+
+
+  </ul>
+
+  <div class="subtitle">EXTRA: Deducciones realizadas con la herramienta de visualización</div>
+  Con el fin de demostrar que se puede realizar la primera tarea, de descubrir información (con veracidad variable, como en todos los estudios que incluyen pseudociencias) utilizando la herramienta, se listarán ejemplos de posibles deducciones hechas con esta misma.
+
+  <ol>
+    <li>
+      <div class="subtitle-2">Los roles masculinos requieren más aspectos asociados a la tierra como estabilidad y decisión.</div>
+      Se puede observar claramente la predominancia del elemento tierra en la herramienta. Y no sólo eso, si no que también se observa que el único elemento que se ve altamente afectado por esto es el del aire, su opuesto natural. Dando así argumentos para la conclusión de que los roles masculinos deberían ser interpretados por personas que se vean asociadas a la firmeza, decisión y alta sensación del deber hacia algo (sin la libertad representada por aire). Lo que pareciera calzar con el rol de género asignado al sexo masculino en la cultura occidental.
+    </li>
+    <li>
+      <div class="subtitle-2">El signo Leo es favorecido como actor sin importar el sexo de este.</div>
+      Las características asociadas a Leo en el horóscopo son: independiente, fuerte y ambicioso. Esas características son deseables en cualquier interpretación de un personaje principal digno de ser premiado. Por lo que si al actor o actriz se le atribuyen dichas características, esta actuación promete ser memorable. Esto se puede ver respaldado ya que tanto en mejor actor como en mejor actriz se ve este signo con un balance positivo de victoria (El promedio es 8.33%). 
+    </li>
+    <li>
+      <div class="subtitle-2">El cambio del rol de la mujer en la sociedad occidental se puede observar en el cambio del tipo de actriz premiada através de los años</div>
+      Las características asociadas al aire son libertad y falta de ataduras. Se puede ver que la primera mujer con un signo aire en ganar el premio en el periodo seleccionado fue Jessica Tandy, en 1989. Y luego de ella, se puede ver cierta predisposición a ganadoras con un signo de este elemento. Y luego de esto, el fuego, el cual representa pasión (En la década de los 2000s se ve un dominio absoluto del fuego, lo que puede representar el estado emocional en el que se encontraba EE.UU en ese tiempo con las guerras y el miedo). La primera aparición de un signo aire en el premio de mejor actriz coincide con la liberación de la mujer de su rol en la familia posterior a los años 80, por lo que puede que la sociedad haya cambiado el cómo escribe estos personajes, cambiando así también la actriz perfecta para interpretarlo.
+    </li>
+  </ol>
+
+  </body>
+</html>

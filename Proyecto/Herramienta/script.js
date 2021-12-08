@@ -2,7 +2,8 @@ const HEIGHT = 600;
 const WIDTH = 1000;
 const circle_radius = 130;
 const info_square_width = 80;
-const total_years = 50;
+const total_years = 51;
+let new_m = 100;
 
 const margin = {top: 20, bottom: 20, left: 20, right: 20, infoBoxTop:70};
 const textSpacing = 30;
@@ -33,6 +34,25 @@ const Images = {
     "Aquarius":"M391 192q-59 0 -123 42t-100 42t-61 -7t-55 -25l-8 40q29 16 54.5 24t69.5 8t108 -42t115 -42q53 0 115 40t131 40q55 0 119 -42t100 -42t61 7t55 25l8 -40q-29 -16 -54.5 -24t-69.5 -8t-108 42t-111 42q-61 0 -124.5 -40t-121.5 -40zM390 424q-59 0 -123 42t-100 42 t-61 -7t-55 -25l-8 40q29 16 54.5 24t69.5 8t108 -42t115 -42q53 0 115 40t131 40q55 0 119 -42t100 -42t61 7t55 25l8 -40q-29 -16 -54.5 -24t-69.5 -8t-108 42t-111 42q-61 0 -124.5 -40t-121.5 -40z",
     "Piscies":"M48 344v40h384q-9 219 -212 372l32 24q212 -148 220 -396h80q8 248 220 396l32 -24q-203 -153 -212 -372h384v-40h-384q9 -219 212 -372l-32 -24q-212 148 -220 396h-80q-8 -248 -220 -396l-32 24q203 153 212 372h-384z"
 };
+
+const Traducciones = {
+    "Earth":"Tierra",
+    "Water":"Agua",
+    "Air":"Aire",
+    "Fire":"Fuego",
+    "Taurus":"Tauro",
+    "Virgo":"Virgo",
+    "Capricorn":"Capricornio",
+    "Aries":"Aries",
+    "Leo":"Leo",
+    "Sagittarius":"Sagitario",
+    "Cancer":"Cancer",
+    "Scorpio":"Escorpio",
+    "Piscies":"Piscies",
+    "Gemini":"Géminis",
+    "Libra":"Libra",
+    "Aquarius":"Acuario",
+}
 const Colors = 
 {
     "Earth":"#538d22",
@@ -51,7 +71,8 @@ const Colors =
     "Gemini":"#9163cb",
     "Libra":"#c19ee0",
     "Aquarius":"#dec9e9",
-    "Text":"#ffff"
+    "Text":"#ffff",
+    "Background":"#001233"
 };
 
 const scale_map = {
@@ -74,10 +95,11 @@ const scale_map = {
 }
 
 const selectorContainer = d3.select("#selectors");
-selectorContainer.append("p").text("Elegir parámetro de comparación");
 const selector = selectorContainer.append('select');
 
-const applyButton = selectorContainer.append('button');
+selector.attr("class","selector");
+
+const applyButton = selectorContainer.append('button').attr("class","selector-button");
 applyButton.text("Aplicar");
 
 selector.append("option").text("Elemento");
@@ -96,7 +118,7 @@ const svg = d3.select('.tool-container')
 const infoBox = svg
     .append('g')
     .attr('id', 'info-box-container')
-    .attr('transform',`translate(${2*circle_radius + info_square_width/2 - 15},${margin.top + textSpacing + margin.infoBoxTop})`)
+    .attr('transform',`translate(${2*circle_radius + info_square_width/2 - 15 + new_m},${margin.top + textSpacing + margin.infoBoxTop})`)
 
 const infoPercentM = infoBox 
     .append('text')
@@ -188,16 +210,20 @@ const actors = loadFiles().then(({actors, actresses}) => {
 
     let m_s_data_ready = pie(sign_data_m);
     let f_s_data_ready = pie(sign_data_f);
-    let g_s_data_ready = pie(sign_data_g);
     let m_e_data_ready = pie(element_data_m);
     let f_e_data_ready = pie(element_data_f);
-    let g_e_data_ready = pie(element_data_g);
+
+    let CGM;
+    let CGF;
+    let TLM;
+    let TLF;
+
     
 
     function createCircleGraphs(data_chosen){
         const circleGraphM = svg.append('g')
             .attr('id','circle-container-m')
-            .attr('transform', `translate(${margin.left}, ${margin.top})`);
+            .attr('transform', `translate(${margin.left + new_m}, ${margin.top})`);
 
         const titleCircleM = circleGraphM.append('text')
             .attr('id','circle-title-container-m')
@@ -220,7 +246,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
 
         const circleGraphF = svg.append('g')
             .attr('id','circle-container-f')
-            .attr('transform', `translate(${2*(margin.left + circle_radius + info_square_width + margin.right)}, ${margin.top})`);
+            .attr('transform', `translate(${2*(margin.left + circle_radius + info_square_width + margin.right) + new_m}, ${margin.top})`);
 
         const titleCircleF = circleGraphF.append('text')
             .attr('id','circle-title-container-m')
@@ -229,6 +255,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
             .text("Mejor Actriz")
             .style("text-anchor", "middle")
             .style("fill",`${Colors["Text"]}`);
+
 
         let d_m, d_f;
         if(data_chosen === "Signo"){
@@ -260,7 +287,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
                 .style("opacity",1)
                 .style("stroke-width",10);
             textCircleM
-                .text(`${d.data.key}`);
+                .text(`${Traducciones[d.data.key]}`);
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",1)
@@ -314,6 +341,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
         .attr("transform",`translate(${circle_radius + 20},${circle_radius + 20})`)
         .attr('fill', function(d){return(Colors[`${d.data.key}`]) })
         .attr("stroke", function(d){return(Colors[`${d.data.key}`]) })
+        .attr("z",0)
         .style("stroke-width", "0px")
         .style("opacity", 0.8)
         .on("mouseenter", (m, d) => {
@@ -322,7 +350,7 @@ const actors = loadFiles().then(({actors, actresses}) => {
                 .style("opacity",1)
                 .style("stroke-width",10);
             textCircleM
-                .text(`${d.data.key}`);
+                .text(`${Traducciones[d.data.key]}`);
             sec = circleGraphF.selectAll(`.CGS-${d.data.key}`)
             sec
                 .style("opacity",1)
@@ -361,17 +389,245 @@ const actors = loadFiles().then(({actors, actresses}) => {
                 .text(``);
         });
 
-        const paramsSelect = () => {
-            let actual = selector.node().value;
-            circleGraphF.remove();
-            circleGraphM.remove();
-            createCircleGraphs(actual);
-            
-        };
+        CGF = circleGraphF;
+        CGM = circleGraphM;
 
-        applyButton.on("click", () => paramsSelect());
+
     };
 
-    createCircleGraphs("Signo");
+    function chooseMode(obj, opt){
+        if(opt == "Signo"){
+            return obj.Sign;
+        }
+        else{
+            return obj.Element;
+        }
+    }
+    function createTimeline(opt){
+        
+
+        d_m = actors;
+        d_f = actresses;
+        let xScale = d3.scaleBand().range([0, WIDTH-50 - margin.left - margin.right]),
+        yScale = d3.scaleLinear().range([20, 0]);
+
+        const timelineM = svg
+                            .append('g')
+                            .attr('id','timeline-container-m')
+                            .attr('transform',`translate(${margin.left},160)`);
+
+        const timelineF = svg
+                            .append('g')
+                            .attr('id','timeline-container-f')
+                            .attr('transform',`translate(${margin.left},160)`);
+
+
+        timelineM.append('text')
+                .attr('id','timeline-name-f')
+                .attr('fill',`${Colors["Text"]}`)
+                .attr('transform','translate(0,288)')
+                .style('font-size','0.8rem')
+                .text('Actores');
+
+        timelineF.append('text')
+                .attr('id','timeline-name-f')
+                .attr('fill',`${Colors["Text"]}`)
+                .attr('transform','translate(0,302)')
+                .style('font-size','0.8rem')
+                .text('Actrices');
+                            
+
+        xScale.domain(d_f.map(function(d) { return d.Year; }));
+        yScale.domain([0, 1]);
+
+        timelineF.append("g")
+         .attr('id','bottom-axis')
+         .attr("transform", "translate(50,300)")
+         .call(d3.axisBottom(xScale).tickFormat(function(d){
+             return d;
+         }).tickValues(d3.range(1970, 2021, 10)));
+
+        timelineF.selectAll(".bar")
+         .data(d_f)
+         .enter().append("rect")
+         .attr("class", function(d) {return `bar-f-${d.Year}`})
+         .attr("x", function(d) { return xScale(d.Year); })
+         .attr("y", 1)
+         .attr("z",0)
+         .attr("opacity",0.8)
+         .attr("width", xScale.bandwidth())
+         .attr("fill",function(d) {return Colors[chooseMode(d,opt)]})
+         .attr("transform","translate(50,289)")
+         .attr("height", function(d) { return  10 - yScale(1); })
+         .on("mouseenter", (m, d) => {
+            const box = timelineF.append('g')
+                    .attr('id','timeline-info-box');
+            box.append("rect")
+                .attr("x",`${Math.min(m.x - 380, 730)}`)
+                .attr("y",`180`)
+                .attr("stroke",`${Colors["Text"]}`)
+                .attr("stroke-width",0.5)
+                .attr("height",100)
+                .attr("width",250)
+                .attr("fill",`${Colors["Background"]}`)
+                
+
+            box.append('text')
+                .attr("id","infoName")
+                .attr("x",`${Math.min(m.x - 362, 748)}`)
+                .attr("y",`200`)
+                .attr("font-size","0.8rem")
+                .text(`Nombre: ${d.Name}`)
+                .style("text-anchor", "right")
+                .style("fill",`${Colors["Text"]}`);
+
+            box.append('text')
+                .attr("id","infoYear")
+                .attr("x",`${Math.min(m.x - 362, 748)}`)
+                .attr("y",`217`)
+                .attr("font-size","0.8rem")
+                .text(`Año: ${d.Year}`)
+                .style("text-anchor", "right")
+                .style("fill",`${Colors["Text"]}`);
+
+            box.append('text')
+                .attr("id","infoMovie")
+                .attr("x",`${Math.min(m.x - 362, 748)}`)
+                .attr("y",`234`)
+                .attr("font-size","0.8rem")
+                .text(`Película: ${d.Movie}`)
+                .style("text-anchor", "right")
+                .style("fill",`${Colors["Text"]}`);
+
+            box.append('text')
+                .attr("id","infoSign")
+                .attr("x",`${Math.min(m.x - 362, 748)}`)
+                .attr("y",`251`)
+                .attr("font-size","0.8rem")
+                .text(`Signo: ${Traducciones[d.Sign]}`)
+                .style("text-anchor", "right")
+                .style("fill",`${Colors["Text"]}`);
+
+            box.append('text')
+                .attr("id","infoElement")
+                .attr("x",`${Math.min(m.x - 362, 748)}`)
+                .attr("y",`268`)
+                .attr("font-size","0.8rem")
+                .text(`Elemento: ${Traducciones[d.Element]}`)
+                .style("text-anchor", "right")
+                .style("fill",`${Colors["Text"]}`);
+
+            timelineF.selectAll(`.bar-f-${d.Year}`)
+                .attr("opacity",1);
+
+          })
+          .on("mouseleave", (m,d) =>{
+            timelineF.selectAll("#timeline-info-box").remove()
+            timelineF.selectAll(`.bar-f-${d.Year}`)
+                .attr("opacity",0.8);
+        });
+
+
+        timelineM.selectAll(".bar")
+         .data(d_m)
+         .enter().append("rect")
+         .attr("class", function(d) {return `bar-m-${d.Year}`})
+         .attr("x", function(d) { return xScale(d.Year); })
+         .attr("y", 1)
+         .attr("opacity",0.8)
+         .attr("width", xScale.bandwidth())
+         .attr("fill",function(d) {return Colors[chooseMode(d, opt)]})
+         .attr("transform","translate(50,279)")
+         .attr("height", function(d) { return  10 - yScale(1); })
+         .on("mouseenter", (m, d) => {
+
+            const box = timelineF.append('g')
+                    .attr('id','timeline-info-box');
+                box.append("rect")
+                    .attr("x",`${Math.min(m.x - 380, 730)}`)
+                    .attr("y",`180`)
+                    .attr("stroke",`${Colors["Text"]}`)
+                    .attr("stroke-width",0.5)
+                    .attr("height",100)
+                    .attr("width",250)
+                    .attr("fill",`${Colors["Background"]}`)
+                    
+    
+                box.append('text')
+                    .attr("id","infoName")
+                    .attr("x",`${Math.min(m.x - 362, 748)}`)
+                    .attr("y",`200`)
+                    .attr("font-size","0.8rem")
+                    .text(`Nombre: ${d.Name}`)
+                    .style("text-anchor", "right")
+                    .style("fill",`${Colors["Text"]}`);
+    
+                box.append('text')
+                    .attr("id","infoYear")
+                    .attr("x",`${Math.min(m.x - 362, 748)}`)
+                    .attr("y",`217`)
+                    .attr("font-size","0.8rem")
+                    .text(`Año: ${d.Year}`)
+                    .style("text-anchor", "right")
+                    .style("fill",`${Colors["Text"]}`);
+    
+                box.append('text')
+                    .attr("id","infoMovie")
+                    .attr("x",`${Math.min(m.x - 362, 748)}`)
+                    .attr("y",`234`)
+                    .attr("font-size","0.8rem")
+                    .text(`Película: ${d.Movie}`)
+                    .style("text-anchor", "right")
+                    .style("fill",`${Colors["Text"]}`);
+    
+                box.append('text')
+                    .attr("id","infoSign")
+                    .attr("x",`${Math.min(m.x - 362, 748)}`)
+                    .attr("y",`251`)
+                    .attr("font-size","0.8rem")
+                    .text(`Signo: ${Traducciones[d.Sign]}`)
+                    .style("text-anchor", "right")
+                    .style("fill",`${Colors["Text"]}`);
+    
+                box.append('text')
+                    .attr("id","infoElement")
+                    .attr("x",`${Math.min(m.x - 362, 748)}`)
+                    .attr("y",`268`)
+                    .attr("font-size","0.8rem")
+                    .text(`Elemento: ${Traducciones[d.Element]}`)
+                    .style("text-anchor", "right")
+                    .style("fill",`${Colors["Text"]}`);
+
+            timelineM.selectAll(`.bar-m-${d.Year}`)
+                .attr("opacity",1);
+
+          })
+          .on("mouseleave", (m,d) =>{
+            timelineF.selectAll("#timeline-info-box").remove()
+            timelineM.selectAll(`.bar-m-${d.Year}`)
+                .attr("opacity",0.8);
+        });
+
+         TLF = timelineF;
+         TLM = timelineM;
+
+    }
+
+
+    const paramsSelect = () => {
+        let actual = selector.node().value;
+        CGF.remove();
+        CGM.remove();
+        TLF.remove();
+        TLM.remove()
+        createCircleGraphs(actual);
+        createTimeline(actual);
+        
+    };
+
+    applyButton.on("click", () => paramsSelect()); 
+
+    createCircleGraphs("Elemento");
+    createTimeline("Elemento");
 });
 

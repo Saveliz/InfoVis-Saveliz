@@ -1,0 +1,58 @@
+:root{
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+body{
+    margin: auto;
+    width: 50%;
+    align-items: center;
+    text-align: justify;
+    background-color: aliceblue;
+}
+.head-container{
+    margin: 0rem;
+}
+
+.title{
+    font-size: 2rem;
+    font-weight: bolder;
+}
+
+.subtitle{
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle-2{
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+li{
+    margin-top: 0.2rem;
+    margin-bottom: 0.8rem;
+}
+li::marker{
+    font-weight: bold;
+}
+
+.code{
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+
+.highlight{
+    background-color: rgb(105, 206, 172);
+    font-style: italic;
+}
+
+.bold{
+    font-weight: bold;
+}
+
+.italic{
+    font-style:italic;
+}
+
